@@ -1,4 +1,6 @@
-import Link from 'next/link';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { Pokemon } from '@/@types/pokemon';
 
 // template literals type
@@ -22,10 +24,11 @@ async function getData(id: string) {
 }
 
 export default async function Single({ params }: SingleProps) {
+  const router = useRouter();
+
   const [id] = params.slug.split('-');
 
   const pokemon = await getData(id);
-  console.log(pokemon);
 
   return (
     <main className="bg-cyan-950 min-h-screen">
@@ -33,7 +36,7 @@ export default async function Single({ params }: SingleProps) {
         {pokemon.name.fr}
       </h1>
 
-      <Link href="/" className="text-slate-300">← Accueil</Link>
+      <button type="button" onClick={() => router.back()} className="text-slate-300">← Accueil</button>
 
       <img
         src={pokemon.sprites.shiny || pokemon.sprites.regular}
