@@ -1,24 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 import PokemonCard from '@/components/PokemonCard';
 
 import { Pokemon } from '@/@types/pokemon';
-import Link from 'next/link';
 
 interface PokemonListProps {
   pokemons: Pokemon[]
 }
 
 function PokemonList({ pokemons }: PokemonListProps) {
-  const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(20);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const defaultPage = searchParams.get('page') || 0;
+  const defaultPerPage = searchParams.get('perPage') || 20;
+
+  const [page, setPage] = useState(Number(defaultPage));
+  const [perPage, setPerPage] = useState(Number(defaultPerPage));
 
   const start = page * perPage;
   const end = start + perPage;
 
   const pokemonsFiltered = pokemons.slice(start, end);
+
+  useEffect(() => {
+    const url = page === 0 && perPage === 20
+      ? pathname
+      : `${pathname}?page=${page}&perPage=${perPage}`;
+
+    router.push(url);
+  }, [page, pathname, perPage, router]);
 
   return (
     <>
